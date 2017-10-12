@@ -5,4 +5,4 @@
 
  [Java串口编程：串口数据的发送与监听读取](https://github.com/CaroseKYS/Blog/blob/master/content/serial-port-programming/index.md)
 
- [技术之外]()
+ [技术之外](https://github.com/CaroseKYS/Blog/blob/master/content/my-daily/index.md)
