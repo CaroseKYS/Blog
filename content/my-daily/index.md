@@ -1,3 +1,5 @@
+[2017-10-18: 未雨绸缪](https://github.com/CaroseKYS/Blog/blob/master/content/my-daily/2017/10/2017-10-18.md)
+
 [2017-10-17: 有机会就多尝试 有舞台就多展示](https://github.com/CaroseKYS/Blog/blob/master/content/my-daily/2017/10/2017-10-17.md)
 
 [2017-10-16: 轻诺者必寡信](https://github.com/CaroseKYS/Blog/blob/master/content/my-daily/2017/10/2017-10-16.md)
