@@ -1,5 +1,6 @@
 # 个人博客首页
 
+ [阿里云ECS CentOS 7 图形桌面安装及chrome浏览器](https://github.com/CaroseKYS/Blog/blob/master/content/WOL/index.md)
 
  [使用Java Socket发送魔术包：实现电脑远程开机(WOL)](https://github.com/CaroseKYS/Blog/blob/master/content/WOL/index.md)
 
