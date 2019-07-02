@@ -372,10 +372,3 @@ public class Com21EventListener implements SerialPortEventListener {
 　
 - 链接: https://pan.baidu.com/s/1m9qXcYQMcppkEcD8YVxEbQ 
 - 密码: `x5xw`
-
-# 打赏作者，让他更勤奋 #
-![这里写图片描述](https://img-blog.csdn.net/2018040315591218?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMzNjM4MTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
-
-
-# 有问题也可以联系作者进一步交流嗷 #
-![这里写图片描述](https://img-blog.csdn.net/20180403155928530?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMzNjM4MTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
