@@ -7,6 +7,7 @@ const DEFAULT_DONATE = [
     },
     {
         type: 'wechat',
+        desc: '',
         qrcode: ''
     },
     {
@@ -25,6 +26,15 @@ const QrcodeSpec = {
         [type]: 'string',
         [doc]: 'Qrcode image URL',
         [required]: true,
+        [requires]: donate => donate.type === 'alipay' || donate.type === 'wechat'
+    }
+};
+
+const DescSpec = {
+    desc: {
+        [type]: 'string',
+        [doc]: '一段描述信息',
+        [required]: false,
         [requires]: donate => donate.type === 'alipay' || donate.type === 'wechat'
     }
 };
@@ -67,6 +77,7 @@ module.exports = {
         },
         ...QrcodeSpec,
         ...PaypalSpec,
-        ...PatreonSpec
+        ...PatreonSpec,
+        ...DescSpec
     }
 }

@@ -1,10 +1,11 @@
 <% const qrcode = get_config_from_obj(service, 'qrcode');
+   const desc = get_config_from_obj(service, 'desc');
     if (qrcode) { %>
 <a class="button is-success donate">
     <span class="icon is-small">
         <i class="fab fa-weixin"></i>
     </span>
-    <span><%= __('donate.' + type) %></span>
+    <span><%= desc %></span>
     <div class="qrcode"><img src="<%= url_for(qrcode) %>" alt="<%= __('donate.' + type) %>"></div>
 </a>
 <% } else { %>

@@ -23,11 +23,11 @@ open_graph:
 navbar:
     # Navigation bar menu links
     menu:
-        Home: /
-        Archives: /archives
-        Categories: /categories
-        Tags: /tags
-        About: /about
+        首页: /
+        归档: /archives
+        分类: /categories
+        标签: /tags
+        关于本站: /about
     # Navigation bar links to be shown on the right
     links:
         Download on GitHub:
@@ -71,25 +71,15 @@ donate:
     -
         # Donation entry name
         type: wechat
+        desc: '微信打赏'
         # Qrcode image URL
-        qrcode: '//ww2.sinaimg.cn/large/006tNc79ly1g4lkj5qk76j308c08cabg.jpg'
+        qrcode: 'http://ww3.sinaimg.cn/large/006tNc79ly1g4lkj5qk76j308c08cabg.jpg'
     -
         # Donation entry name
         type: wechat
+        desc: '互加好友'
         # Qrcode image URL
-        qrcode: ''
-    -
-        # Donation entry name
-        type: paypal
-        # Paypal business ID or email address
-        business: ''
-        # Currency code
-        currency_code: USD
-    -
-        # Donation entry name
-        type: patreon
-        # URL to the Patreon page
-        url: ''
+        qrcode: 'http://ww3.sinaimg.cn/large/006tNc79ly1g4lmnig6dbj308c08cabg.jpg'
 # Share plugin settings
 # https://ppoffice.github.io/hexo-theme-icarus/categories/Plugins/Share
 share:
@@ -119,7 +109,7 @@ widgets:
         # Author name to be shown in the profile widget
         author: 康永胜
         # Title of the author to be shown in the profile widget
-        author_title: Your title
+        author_title: 做正确的事情，时间会给你回报
         # Author's current location to be shown in the profile widget
         location: 北京
         # Path or URL to the avatar to be shown in the profile widget
@@ -159,8 +149,8 @@ widgets:
         position: left
         # Links to be shown in the links widget
         links:
-            Laiye: 'https://www.laiye.com'
-            Codan's Blog: 'https://crazyoctopusdan.github.io'
+            来也科技: 'https://www.laiye.com'
+            张熠的博客: 'https://crazyoctopusdan.github.io'
     -
         # Widget name
         type: category
