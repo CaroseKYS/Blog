@@ -117,7 +117,7 @@ widgets:
         # Where should the widget be placed, left or right
         position: left
         # Author name to be shown in the profile widget
-        author: Your name
+        author: Carose
         # Title of the author to be shown in the profile widget
         author_title: Your title
         # Author's current location to be shown in the profile widget
