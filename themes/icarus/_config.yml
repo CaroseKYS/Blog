@@ -70,9 +70,9 @@ comment:
 donate:
     -
         # Donation entry name
-        type: alipay
+        type: wechat
         # Qrcode image URL
-        qrcode: ''
+        qrcode: '//ww2.sinaimg.cn/large/006tNc79ly1g4lkj5qk76j308c08cabg.jpg'
     -
         # Donation entry name
         type: wechat
