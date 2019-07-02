@@ -1,5 +1,6 @@
 ﻿---
 title: Java串口编程：串口数据的发送与监听读取
+thumbnail: https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E9%98%BF%E5%B0%94%E5%8D%91%E6%96%AF%E5%B1%B1%E7%9A%84%E9%9B%AA%E5%B4%A9%20.jpeg
 menu:
   Go Home: /index.html
 ---

@@ -73,13 +73,13 @@ donate:
         type: wechat
         desc: '微信打赏'
         # Qrcode image URL
-        qrcode: 'http://ww3.sinaimg.cn/large/006tNc79ly1g4lkj5qk76j308c08cabg.jpg'
+        qrcode: 'https://yongshengcnd.oss-cn-beijing.aliyuncs.com/public/wechat_reward.jpeg'
     -
         # Donation entry name
         type: wechat
         desc: '互加好友'
         # Qrcode image URL
-        qrcode: 'http://ww3.sinaimg.cn/large/006tNc79ly1g4lmnig6dbj308c08cabg.jpg'
+        qrcode: 'https://yongshengcnd.oss-cn-beijing.aliyuncs.com/public/wechat_friend.jpeg'
 # Share plugin settings
 # https://ppoffice.github.io/hexo-theme-icarus/categories/Plugins/Share
 share:
