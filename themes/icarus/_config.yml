@@ -117,11 +117,11 @@ widgets:
         # Where should the widget be placed, left or right
         position: left
         # Author name to be shown in the profile widget
-        author: Carose
+        author: 康永胜
         # Title of the author to be shown in the profile widget
         author_title: Your title
         # Author's current location to be shown in the profile widget
-        location: Your location
+        location: 北京
         # Path or URL to the avatar to be shown in the profile widget
         avatar: 
         # Email address for the Gravatar to be shown in the profile widget
@@ -134,10 +134,10 @@ widgets:
         social_links:
             Github:
                 icon: fab fa-github
-                url: 'https://github.com/ppoffice'
+                url: 'https://github.com/CaroseKYS'
             Facebook:
                 icon: fab fa-facebook
-                url: 'https://facebook.com'
+                url: 'https://www.facebook.com/kangysgo'
             Twitter:
                 icon: fab fa-twitter
                 url: 'https://twitter.com'
@@ -159,8 +159,8 @@ widgets:
         position: left
         # Links to be shown in the links widget
         links:
-            Hexo: 'https://hexo.io'
-            PPOffice: 'https://github.com/ppoffice'
+            Laiye: 'https://www.laiye.com'
+            Codan's Blog: 'https://crazyoctopusdan.github.io'
     -
         # Widget name
         type: category
