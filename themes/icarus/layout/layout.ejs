@@ -6,7 +6,10 @@
 <body class="is-<%= column_count() %>-column">
     <%- partial('common/navbar', { page }) %>
     <% function main_column_class() {
-        return 'is-12';
+        // 判断是否是文章页面
+        if (page.published){
+            return 'is-12';
+        }
         switch (column_count()) {
             case 1:
                 return 'is-12';
@@ -21,8 +24,10 @@
         <div class="container">
             <div class="columns">
                 <div class="column <%= main_column_class() %> has-order-2 column-main"><%- body %></div>
-                <%- partial('common/widget', { position: 'left' }) %>
-                <%- partial('common/widget', { position: 'right' }) %>
+                <% if (!page.published) { %>
+                    <%- partial('common/widget', { position: 'left' }) %>
+                    <%- partial('common/widget', { position: 'right' }) %>
+                <% } %>
             </div>
         </div>
     </section>

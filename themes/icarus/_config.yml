@@ -165,17 +165,17 @@ widgets:
         # Widget name
         type: recent_posts
         # Where should the widget be placed, left or right
-        position: left
+        position: right
     -
         # Widget name
         type: archive
         # Where should the widget be placed, left or right
-        position: left
+        position: right
     -
         # Widget name
         type: tag
         # Where should the widget be placed, left or right
-        position: left
+        position: right
 # Other plugin settings
 plugins:
     # Enable page animations
