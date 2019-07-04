@@ -19,8 +19,7 @@ tags: [Web]
     + 使用本地服务组件(http)
     + 局域网共享打印
     + 云打印（google，惠普，易联云）
-
-
+<!-- more -->
 
 服务器端生成PDF 浏览器利用Adobe reader打印pdf(纸张调整)
 lodop, jatoolsPrinter
