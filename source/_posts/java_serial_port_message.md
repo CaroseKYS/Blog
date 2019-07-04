@@ -13,7 +13,7 @@ tags: [Java]
 
 本人在近期的开发工作中遇到向串口发送设备控制指令的需求，遂对串口编程进行了略微深入的钻研，在此对自己的一些心得和经验进行总结，以供大家参考与交流。
 <!-- more -->
-#串口介绍 #
+# 串口介绍
 　　串口全称为串行接口，一般指COM接口，是采用串行通信方式的扩展接口。其特点是数据位的传送按位顺序进行，最少只需一根传输线即可完成，成本低但传送速度慢。由于串口（COM）不支持热插拔及传输速率较低，目前部分新主板和大部分便携电脑已取消该接口。现在串口多用于工业控制和测量设备以及部分通信设备中。
 　　根据美国电子工业协会(EIA: Electronic Industry Association）制定的标准，串口可以分为RS-232、RS-422以及RS-485等种类，其中以RS-232类型的接口最为典型和常见，本文所使用的是RS-232类型的9针串口（RS-232类型有25接口，但是现在几乎不再使用）。如图 1所示，是RS-232类型9针串口的实物示意图。RS-232类型9针串口每一个引脚的作用说明如图 2所示。
 　　　　![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzE0MjExODU4Mjg2)
@@ -29,8 +29,8 @@ tags: [Java]
 　　comm2.0.jar：http://pan.baidu.com/s/1pJKBOcN
 　　comm3.0.jar：http://pan.baidu.com/s/1o6wrpwA
 
-# 对串口编程的环境搭建 #
-## 软件环境搭建##
+# 对串口编程的环境搭建
+## 软件环境搭建
 　　在本文写作时，本人所使用的软件开发环境为：Windows7，Jdk1.6.0_10，Eclipse3.4.1。Java对串口编程的环境搭建分为以下步骤：
 　　1.下载并安装jdk，本人jdk的根目录是“D:\ProgramFiles\Java\jdk1.6.0_10”，在接下来的文章中路径“D:\ProgramFiles\Java\jdk1.6.0_10”将使用“%JAVA_HOME%”来代替；
 　　2.下载comm2.0.jar（下载链接见上文）并将串口编程必须的3个文件拷贝到jdk对应的文件夹中：
@@ -40,12 +40,12 @@ tags: [Java]
 　　3	新建工程并将comm.jar添加到工程文件中：
 　　　　3.1	新建java工程serialPortProgramming，并将该工程的运行时环境（JRE）指定为步骤1中新安装的jdk。
 　　　　3.2	在工程中新建“lib”文件夹，并将comm.jar文件拷贝到该文件夹下，右键点击该文件选择【Build Path】—【Add to Build Path】。
-##“硬件” 环境准备 ##
+## “硬件” 环境准备
 　　Java对串口编程，首先设备上需要有串口（这不废话吗），但如今的大多数电脑主板上并不带串口，所以本人用Virtual Serial Port Driver软件虚拟出一对串口COM11和COM21，以方便文章的写作和实验的进行。
 　　下载Virtual Serial Port Driver7.1（http://pan.baidu.com/s/1qW6wCsW）并安装，使用压缩包中的“vspdctl.dll”文件替换软件安装根目录中的“vspdctl.dll”文件即可完成破解。安装Virtual Serial Port Driver之后用该软件创建一对端口（COM11和COM21），在此创建的一对串口将在之后的实验中再次使用到。因为串口COM11和COM21是通过软件虚拟的、相互连接的一对串口，所以从COM11发送的数据COM21会接收到，反之亦然。
 　　当然如果自己的设备上有串口的话也可以不用创建虚拟串口，只需要将一个串口的数据发送引脚（引脚3，如图 2所示）和另一个串口的数据接收引脚（引脚2）使用一根铜线链接即可实现数据的收发。如果设备上只有一个串口，要实现串口数据的收发，可以将串口的引脚2和引脚3使用铜线相连接，这样从本串口发送的数据就会通过本串口接收到。
 
-# 实例一：获取本地串口并实现打开与关闭 #
+# 实例一：获取本地串口并实现打开与关闭
 　　在上文创建好的工程中新建包“com.serialPort.writer”并新建类OpenerAndCloser，该类实现串口的获取、打开与关闭。
 
 OpenerAndCloser.java
@@ -139,8 +139,8 @@ public class OpenerAndCloser {
 　　在以上的代码中，有两个较为重要的类，在此做以说明，它们是类CommPortIdentifier和类SerialPort。这两个类都来自于comm.jar，CommPortIdentifier类代表本地串口，可以通过该类的静态方法getPortIdentifier或getPortIdentifiers获取本地的串口，该类的实例方法open用于打开串口。SerialPort类同样代表本地串口，不过其代表的是打开的串口，可以通过该类的实例方法close关闭已经打开的串口，也可以通过该类的实例方法获取串口的输入输出流，实现往串口数据的读写操作。
 　　执行Com11Writer类的main方法，就会发现控制台输出了本地机器的所有串口（包括虚拟串口和物理串口）。
 
-# 实例二：串口数据的读写 #
-## 向串口写数据##
+# 实例二：串口数据的读写
+## 向串口写数据
 　　在包“com.serialPort.writer”下新建Com11Writer类，该类实现往COM11写入数据“Hello World!”的功能，向串口COM11写入的数据会发送到与其相连的另一个串口COM21，并被COM21所接收，从串口接收数据的方式将在下文讲到，以下是Com11Writer的源代码：
 
 Com11Writer.java
@@ -201,7 +201,7 @@ public class Com11Writer {
 
 ```
 
-## 从串口读数据##
+## 从串口读数据
 　　从串口COM11发送的数据最终将到达与其连通的串口COM21，如果COM21处于可用状态，则到达的数据将被缓存，等待程序的读取。从串口读入数据有多种模式，本文将介绍“轮询模式”和事件监听模式。
 　　“轮询模式”是指程序（线程）每隔固定的时间就对串口进行一次扫描，如果扫描发现串口中有可用数据，则进行读取。Com21PollingListener类使用“事件监听模式”读取串口COM21接收到的数据：
 
@@ -365,11 +365,11 @@ public class Com21EventListener implements SerialPortEventListener {
 }
 ```
 
-## 读写程序的联合运行 ##
+## 读写程序的联合运行
 　　串口能接收到数据的前提是该串口处于打开（可用）状态，如果串口处于关闭状态，那么发送到该串口的数据就会丢失。所以在实验的过程中，如果使用铜线连接同一个串口的引脚2和引脚3，一定要注意的是千万不能在向串口发送完数据之后关闭该串口，然后再次打开串口去读取数据，一定要让串口始终处于打开状态直到程序运行结束。
 　　基于以上的说明，在本文所涉及到的实例中，首先运行Com21PollingListener类（或Com21EventListener类）中的main方法打开端口监听程序，然后再运行Com11Writer类的main方法通过COM11向COM21发送数据，这样程序就能从COM21读取数据。
 
-# 参考与鸣谢 #
+# 参考与鸣谢
 　　在本文写作的过程中参考了很多网络资源，其中参考了如下几篇文章，在此对所有作者的无私奉献表示衷心的感谢。
 　　http://blog.csdn.net/luoduyu/article/details/2182321
 　　http://www.cnblogs.com/dyufei/archive/2010/09/19/2573913.html
