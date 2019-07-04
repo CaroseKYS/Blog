@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<title>使用Java Socket发送魔术包：实现电脑远程开机(WOL) - 木子随笔</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="背景图《腓特烈听桑索西长笛音乐会》，由阿尔道夫·门采尔（德国）于1852年创作，该画的写实手法体现于画面每一处细节。幻妙的音乐，精致的灯盏，婉转的长笛，闪烁的烛光，每一种物象的和谐构置复原了一幅展现上层社会风貌的画面。   　　远程开机也被称为远程唤醒技术（Wake on Lan: WOL），是指可以通过局域网、互联网或者通讯网实现远程开机，无论目标主机离用户有多远、处于什么位置，只要其与发送命">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Java Socket发送魔术包：实现电脑远程开机(WOL)">
+<meta property="og:url" content="http://www.yongsheng.us/2015/03/17/WOL/index.html">
+<meta property="og:site_name" content="木子随笔">
+<meta property="og:description" content="背景图《腓特烈听桑索西长笛音乐会》，由阿尔道夫·门采尔（德国）于1852年创作，该画的写实手法体现于画面每一处细节。幻妙的音乐，精致的灯盏，婉转的长笛，闪烁的烛光，每一种物象的和谐构置复原了一幅展现上层社会风貌的画面。   　　远程开机也被称为远程唤醒技术（Wake on Lan: WOL），是指可以通过局域网、互联网或者通讯网实现远程开机，无论目标主机离用户有多远、处于什么位置，只要其与发送命">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E8%85%93%E7%89%B9%E7%83%88%E5%90%AC%E6%A1%91%E7%B4%A2%E8%A5%BF%E9%95%BF%E7%AC%9B%E9%9F%B3%E4%B9%90%E4%BC%9A.jpeg">
+<meta property="og:updated_time" content="2019-07-04T09:18:43.235Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Java Socket发送魔术包：实现电脑远程开机(WOL)">
+<meta name="twitter:description" content="背景图《腓特烈听桑索西长笛音乐会》，由阿尔道夫·门采尔（德国）于1852年创作，该画的写实手法体现于画面每一处细节。幻妙的音乐，精致的灯盏，婉转的长笛，闪烁的烛光，每一种物象的和谐构置复原了一幅展现上层社会风貌的画面。   　　远程开机也被称为远程唤醒技术（Wake on Lan: WOL），是指可以通过局域网、互联网或者通讯网实现远程开机，无论目标主机离用户有多远、处于什么位置，只要其与发送命">
+<meta name="twitter:image" content="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E8%85%93%E7%89%B9%E7%83%88%E5%90%AC%E6%A1%91%E7%B4%A2%E8%A5%BF%E9%95%BF%E7%AC%9B%E9%9F%B3%E4%B9%90%E4%BC%9A.jpeg">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="使用Java Socket发送魔术包：实现电脑远程开机(WOL)" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/">首页</a>
+                
+                <a class="navbar-item" href="/archives">归档</a>
+                
+                <a class="navbar-item" href="/categories">分类</a>
+                
+                <a class="navbar-item" href="/tags">标签</a>
+                
+                <a class="navbar-item" href="/about">关于本站</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-offset-1 is-10 has-order-2 column-main"><div class="card">
+    
+    <div class="card-image">
+        <span class="image is-7by1">
+            <img class="thumbnail" src="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E8%85%93%E7%89%B9%E7%83%88%E5%90%AC%E6%A1%91%E7%B4%A2%E8%A5%BF%E9%95%BF%E7%AC%9B%E9%9F%B3%E4%B9%90%E4%BC%9A.jpeg" alt="使用Java Socket发送魔术包：实现电脑远程开机(WOL)">
+        </span>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2015-03-17T08:12:06.000Z">2015-03-17</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    17 分钟 读完 (大约 2563 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                使用Java Socket发送魔术包：实现电脑远程开机(WOL)
+            
+        </h1>
+        <div class="content">
+            <span style="color: #555;font-size: 1rem;display: inline-block;padding-bottom: 15px;text-indent: 2em;">
+背景图《腓特烈听桑索西长笛音乐会》，由阿尔道夫·门采尔（德国）于1852年创作，该画的写实手法体现于画面每一处细节。幻妙的音乐，精致的灯盏，婉转的长笛，闪烁的烛光，每一种物象的和谐构置复原了一幅展现上层社会风貌的画面。
+</span>
+
+<p>　　远程开机也被称为远程唤醒技术（Wake on Lan: WOL），是指可以通过局域网、互联网或者通讯网实现远程开机，无论目标主机离用户有多远、处于什么位置，只要其与发送命令主机可以通信，就能够被随时启动，该技术被现在的大多数主板与网卡所支持。</p>
+<a id="more"></a>
+
+<p>　　远程开机的实现主要依靠向目标主机发送特定格式的数据包，最初AMD公司推出的MagicPackage用于生成远程唤醒所需的特殊数据包，俗称魔术包（Magic Package）。MagicPackage技术只是AMD公司开发并推广的技术，尚未成为一项国际标准，但是该技术受到大多数网卡制造商的支持，因此具有远程唤醒功能的网卡都兼容这项技术。</p>
+<h1 id="1-远程唤醒的必备条件"><a href="#1-远程唤醒的必备条件" class="headerlink" title="1 远程唤醒的必备条件"></a>1 远程唤醒的必备条件</h1><p>　　远程唤醒只能依赖于主机硬件实现，任何用于远程控制的客户端软件都不能完成远程唤醒，因为这些软件在关机状态下是无法工作的。要实现远程唤醒功能需要满足以下几方面的条件：<br></p>
+<p>　　1. 主板支持：要实现远程唤醒，目标主机的主板必须支持远程唤醒功能，能在电脑关机时为网卡供电。 目前（2002年以后）的大部分主板都支持这该功能；<br><br>　　2. 在CMOS中打开远程唤醒功能：开机时进入CMOS，并将“Pow Management Setup”的“Wake Up On Lan”或“Resume by Lan”项设置为“Enable”或“On”即可（作者在本文的实验机上并未找到该项设置，也未进行该项设置）；<br><br>　　3. 网卡支持与设置：要实现远程唤醒，主机网卡也必须支持远程唤醒功能，大多数现代网卡都已支持该功能。在硬件支持的前提下还要打开网卡的远程唤醒功能才能实现唤醒，打开网卡的远程唤醒功能有不止以下两种方法：①.右击“我的电脑”并选择“管理”选项，在随后出现的“计算机管理”窗口中找到“设备管理”，在设备列表中找到“网络适配器”下的本地网卡（注意是有线网卡），右击本地网卡并选择“属性”，在弹出的对话框中选择“高级”页签，选择“Wake on Magic Package”或“网络唤醒”选项并将其值设置为“开启”，在同一个窗口中选择“电源管理”页签，在“允许设备唤醒计算机”以及“只允许幻数据包唤醒计算机”选项前打钩，点击【确定】按钮；②.在win7系统中进入“控制面板”-&gt;“网络和Internet”-&gt;“网络连接”，找到本地连接，右击“本地连接”并选择“属性”，在随后出现的“本地连接 属性”窗口中点击“网络”页签下的【配置】按钮，在随后出现的窗口的“高级”和“电源管理”页签中进行与方法1同样的设置，点击【确定】按钮；<br><br>　　4. 电源支持：主机必须连接电源供电，笔记本电脑必须插继电器。必须使用ATX电源，而且其+5V Standby电流必须比较大，根据Intel的建议，它需要在600mA以上；<br><br>　　5. 目标主机上一次必须正常关机：如果计算机上次是非正常关机（突然断电、强制关机或者关机时发生错误）有可能导致远程唤醒失败，因为一些网卡需要在计算机关机的时候复位一个标记，而这个动作只有在正常关机的时候才会发生；<br><br>　　6. 发送开机命令的主机必须能够与目标主机建立通信：如果发送广播魔术包，那么只要保证广播包能到达目标主机即可，如果发送的是定向包则需要局域网路由器的支持，需要在路由器中配置一个到目标主机的路由信息。<br><br>　　具备以上6个条件之后就可以向目标主机发送魔术包使其自动开机，在展示代码以前先对魔术包以及数据格式的转换进行介绍。</p>
+<h1 id="2-魔术包与编码转换"><a href="#2-魔术包与编码转换" class="headerlink" title="2    魔术包与编码转换"></a>2    魔术包与编码转换</h1><h2 id="2-1-魔术包的组成"><a href="#2-1-魔术包的组成" class="headerlink" title="2.1    魔术包的组成"></a>2.1    魔术包的组成</h2><p>　　魔术包是用16进制表示的数据包，它由固定的前缀数据以及固定重复次数的目标主机MAC地址所组成。所谓固定前缀数据即6对“FF”，所谓固定重复次数即16次，也就是说魔术包是由12个“F”加重复16次的主机MAC地址组成，例如本文所用试验机的MAC地址为“28-D2-44-35-68-A7”，所以使该机远程开机的魔术包为：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0xFFFFFFFFFFFF28D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A728D2443568A7</span><br></pre></td></tr></table></figure>
+
+<p>　　在Windows系统中，主机的MAC地址可以通过在命令窗口中输入“ipconfig -all”命令查看。</p>
+<h2 id="2-2-魔术包的编码转换"><a href="#2-2-魔术包的编码转换" class="headerlink" title="2.2    魔术包的编码转换"></a>2.2    魔术包的编码转换</h2><p>　　在发送魔术包之前需要将魔术包的内容进行编码转换，将其转换为二进制格式的数据进行发送，每一个16进制数占用4bit，所以上文的MAC地址（0x28D2443568A7）经过转码之后的二进制结果为：0010 1000 1101 0010 0100 0100 0011 0101 0110 1000 1010 0111。<br><br>　　使用Java发送UDP广播包时需要将发送的数据存储到byte数组缓存中进行发送，所以需要将魔术包的二进制数据转换为byte数组。Java中一个byte类型数据的长度为8bit，而在魔术包中每一个16进制数占用4bit，所以需要将两个16进制数组合表示为一个Java中的byte类型数据，下文将以试验机MAC地址的前两个数“28” 为例来说明编码转换过程：<br><br>　　1.将第1个数转换为byte类型数据：(byte)2 =&gt; 0000 0010；<br>　　2.将第1个数的转换结果右移4bit：(byte)2 &lt;&lt; 4 =&gt; 0010 0000；<br>　　3.将第2个数 转换为byte类型数据：(byte)8 =&gt; 0000 1000<br>　　4.将2步和第3步中得到的两个数进行逻辑或运算得到转换结果：(byte)2 &lt;&lt; 4) | ((byte)8) =&gt; 0010 1000。<br><br>　　参照上述步骤将“0x28D2443568A7”转换为byte数组的结果如下所示：<br><br><img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwNDAxMTM0NTE2Mzc5" alt="这里写图片描述"><br><br>　　在介绍完远程唤醒的概念、必备条件以及魔术包之后就可以开始用Java代码发送UDP魔术包，使得目标主机进行远程开机。</p>
+<h1 id="3-Java发送UDP广播包"><a href="#3-Java发送UDP广播包" class="headerlink" title="3    Java发送UDP广播包"></a>3    Java发送UDP广播包</h1><p>　　使用Java代码进行数据编码转换以及发送UDP广播包实现电脑远程开机的的代码如下：</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> com.wakeonlan;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="hljs-keyword">import</span> java.net.DatagramPacket;</span><br><span class="line"><span class="hljs-keyword">import</span> java.net.InetAddress;</span><br><span class="line"><span class="hljs-keyword">import</span> java.net.MulticastSocket;</span><br><span class="line"><span class="hljs-keyword">import</span> java.net.UnknownHostException;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">WakeOnLan</span> </span>&#123;</span><br><span class="line">	<span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">	 * main方法，发送UDP广播，实现远程开机，目标计算机的MAC地址为：28D2443568A7</span></span><br><span class="line"><span class="hljs-comment">	 */</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;</span><br><span class="line">		String ip = <span class="hljs-string">"255.255.255.255"</span>;<span class="hljs-comment">//广播IP地址</span></span><br><span class="line">		<span class="hljs-keyword">int</span> port = <span class="hljs-number">9</span>;<span class="hljs-comment">//端口号</span></span><br><span class="line">		<span class="hljs-comment">//魔术包数据</span></span><br><span class="line">		String magicPacage = <span class="hljs-string">"0xFFFFFFFFFFFF"</span> +</span><br><span class="line">		  <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> +</span><br><span class="line">		  <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> +</span><br><span class="line">		  <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> +</span><br><span class="line">		  <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span> + <span class="hljs-string">"28D2443568A7"</span>;</span><br><span class="line">		<span class="hljs-comment">//转换为2进制的魔术包数据</span></span><br><span class="line">		<span class="hljs-keyword">byte</span>[] command = hexToBinary(magicPacage);</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//广播魔术包</span></span><br><span class="line">		<span class="hljs-keyword">try</span> &#123;</span><br><span class="line">			<span class="hljs-comment">//1.获取ip地址</span></span><br><span class="line">			InetAddress address = InetAddress.getByName(ip);</span><br><span class="line">			<span class="hljs-comment">//2.获取广播socket</span></span><br><span class="line">			MulticastSocket socket = <span class="hljs-keyword">new</span> MulticastSocket(port);</span><br><span class="line">			<span class="hljs-comment">//3.封装数据包</span></span><br><span class="line">			<span class="hljs-comment">/*public DatagramPacket(byte[] buf,int length</span></span><br><span class="line"><span class="hljs-comment">			 * 		,InetAddress address</span></span><br><span class="line"><span class="hljs-comment">			 * 		,int port)</span></span><br><span class="line"><span class="hljs-comment">			 * buf：缓存的命令</span></span><br><span class="line"><span class="hljs-comment">			 * length：每次发送的数据字节数，该值必须小于等于buf的大小</span></span><br><span class="line"><span class="hljs-comment">			 * address：广播地址</span></span><br><span class="line"><span class="hljs-comment">			 * port：广播端口</span></span><br><span class="line"><span class="hljs-comment">            */</span></span><br><span class="line">			DatagramPacket packet = <span class="hljs-keyword">new</span> DatagramPacket(command, command.length, address, port);</span><br><span class="line">			<span class="hljs-comment">//4.发送数据</span></span><br><span class="line">			socket.send(packet);</span><br><span class="line">			<span class="hljs-comment">//5.关闭socket</span></span><br><span class="line">			socket.close();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (UnknownHostException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//Ip地址错误时候抛出的异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//获取socket失败时候抛出的异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">	 * 将16进制字符串转换为用byte数组表示的二进制形式</span></span><br><span class="line"><span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> hexString：16进制字符串</span></span><br><span class="line"><span class="hljs-comment">	 * <span class="hljs-doctag">@return</span>：用byte数组表示的十六进制数</span></span><br><span class="line"><span class="hljs-comment">	 */</span></span><br><span class="line">	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span>[] hexToBinary(String hexString)&#123;</span><br><span class="line">		<span class="hljs-comment">//1.定义变量：用于存储转换结果的数组</span></span><br><span class="line">		<span class="hljs-keyword">byte</span>[] result = <span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[hexString.length()];</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//2.去除字符串中的16进制标识"0X"并将所有字母转换为大写</span></span><br><span class="line">		hexString = hexString.toUpperCase().replace(<span class="hljs-string">"0X"</span>, <span class="hljs-string">""</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//3.开始转换</span></span><br><span class="line">		<span class="hljs-comment">//3.1.定义两个临时存储数据的变量</span></span><br><span class="line">		<span class="hljs-keyword">char</span> tmp1 = <span class="hljs-string">'0'</span>;</span><br><span class="line">		<span class="hljs-keyword">char</span> tmp2 = <span class="hljs-string">'0'</span>;</span><br><span class="line">		<span class="hljs-comment">//3.2.开始转换，将每两个十六进制数放进一个byte变量中</span></span><br><span class="line">		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; hexString.length(); i += <span class="hljs-number">2</span>)&#123;</span><br><span class="line">			result[i/<span class="hljs-number">2</span>] = (<span class="hljs-keyword">byte</span>)((hexToDec(tmp1)&lt;&lt;<span class="hljs-number">4</span>)|(hexToDec(tmp2)));</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="hljs-keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment">	 * 用于将16进制的单个字符映射到10进制的方法</span></span><br><span class="line"><span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> c：16进制数的一个字符</span></span><br><span class="line"><span class="hljs-comment">	 * <span class="hljs-doctag">@return</span>：对应的十进制数</span></span><br><span class="line"><span class="hljs-comment">	 */</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span> <span class="hljs-title">hexToDec</span><span class="hljs-params">(<span class="hljs-keyword">char</span> c)</span></span>&#123;</span><br><span class="line">		<span class="hljs-keyword">return</span> (<span class="hljs-keyword">byte</span>)<span class="hljs-string">"0123456789ABCDEF"</span>.indexOf(c);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-参考与鸣谢"><a href="#4-参考与鸣谢" class="headerlink" title="4    参考与鸣谢"></a>4    参考与鸣谢</h1><p>　　在本文写作的过程中参考了很多网络资源，其中参考了如下几篇文章，在此对所有作者的无私奉献表示衷心的感谢。<br>　　<a href="http://blog.csdn.net/a351945755/article/details/22578221" target="_blank" rel="noopener">http://blog.csdn.net/a351945755/article/details/22578221</a><br>　　<a href="http://kuku789123.blog.163.com/blog/static/13616735120130894146519/" target="_blank" rel="noopener">http://kuku789123.blog.163.com/blog/static/13616735120130894146519/</a></p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Java/">Java</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信打赏</span>
+    <div class="qrcode"><img src="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/public/wechat_reward.jpeg" alt="微信"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>互加好友</span>
+    <div class="qrcode"><img src="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/public/wechat_friend.jpeg" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/07/03/linux-desktop/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">阿里云ECS CentOS 7 图形桌面安装、远程连接及chrome浏览器的安装与使用</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2015/03/15/java_serial_port_message/">
+                <span class="level-item">Java串口编程：串口数据的发送与监听读取</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+</div>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="使用Java Socket发送魔术包：实现电脑远程开机(WOL)" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2019 Carose&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>

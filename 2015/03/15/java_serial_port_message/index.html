@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+<title>Java串口编程：串口数据的发送与监听读取 - 木子随笔</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <meta name="description" content="背景图《阿尔卑斯山的雪崩》，是菲利普·卢泰尔堡于1803年创作的一幅布面油画，现藏于菲利普·卢泰尔堡，是一幅以严谨的手法描绘阿尔卑斯山雪崩景象的风景画。   本人在近期的开发工作中遇到向串口发送设备控制指令的需求，遂对串口编程进行了略微深入的钻研，在此对自己的一些心得和经验进行总结，以供大家参考与交流。">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java串口编程：串口数据的发送与监听读取">
+<meta property="og:url" content="http://www.yongsheng.us/2015/03/15/java_serial_port_message/index.html">
+<meta property="og:site_name" content="木子随笔">
+<meta property="og:description" content="背景图《阿尔卑斯山的雪崩》，是菲利普·卢泰尔堡于1803年创作的一幅布面油画，现藏于菲利普·卢泰尔堡，是一幅以严谨的手法描绘阿尔卑斯山雪崩景象的风景画。   本人在近期的开发工作中遇到向串口发送设备控制指令的需求，遂对串口编程进行了略微深入的钻研，在此对自己的一些心得和经验进行总结，以供大家参考与交流。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E9%98%BF%E5%B0%94%E5%8D%91%E6%96%AF%E5%B1%B1%E7%9A%84%E9%9B%AA%E5%B4%A9%20.jpeg">
+<meta property="og:updated_time" content="2019-07-04T09:14:45.945Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java串口编程：串口数据的发送与监听读取">
+<meta name="twitter:description" content="背景图《阿尔卑斯山的雪崩》，是菲利普·卢泰尔堡于1803年创作的一幅布面油画，现藏于菲利普·卢泰尔堡，是一幅以严谨的手法描绘阿尔卑斯山雪崩景象的风景画。   本人在近期的开发工作中遇到向串口发送设备控制指令的需求，遂对串口编程进行了略微深入的钻研，在此对自己的一些心得和经验进行总结，以供大家参考与交流。">
+<meta name="twitter:image" content="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E9%98%BF%E5%B0%94%E5%8D%91%E6%96%AF%E5%B1%B1%E7%9A%84%E9%9B%AA%E5%B4%A9%20.jpeg">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon.svg">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/logo.svg" alt="Java串口编程：串口数据的发送与监听读取" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item" href="/">首页</a>
+                
+                <a class="navbar-item" href="/archives">归档</a>
+                
+                <a class="navbar-item" href="/categories">分类</a>
+                
+                <a class="navbar-item" href="/tags">标签</a>
+                
+                <a class="navbar-item" href="/about">关于本站</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-offset-1 is-10 has-order-2 column-main"><div class="card">
+    
+    <div class="card-image">
+        <span class="image is-7by1">
+            <img class="thumbnail" src="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E9%98%BF%E5%B0%94%E5%8D%91%E6%96%AF%E5%B1%B1%E7%9A%84%E9%9B%AA%E5%B4%A9%20.jpeg" alt="Java串口编程：串口数据的发送与监听读取">
+        </span>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2015-03-15T03:23:06.000Z">2015-03-15</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    28 分钟 读完 (大约 4208 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Java串口编程：串口数据的发送与监听读取
+            
+        </h1>
+        <div class="content">
+            <span style="color: #555;font-size: 1rem;display: inline-block;padding-bottom: 15px;text-indent: 2em;">
+背景图《阿尔卑斯山的雪崩》，是菲利普·卢泰尔堡于1803年创作的一幅布面油画，现藏于菲利普·卢泰尔堡，是一幅以严谨的手法描绘阿尔卑斯山雪崩景象的风景画。
+</span>
+
+<p>本人在近期的开发工作中遇到向串口发送设备控制指令的需求，遂对串口编程进行了略微深入的钻研，在此对自己的一些心得和经验进行总结，以供大家参考与交流。</p>
+<a id="more"></a>
+<h1 id="串口介绍"><a href="#串口介绍" class="headerlink" title="串口介绍"></a>串口介绍</h1><p>　　串口全称为串行接口，一般指COM接口，是采用串行通信方式的扩展接口。其特点是数据位的传送按位顺序进行，最少只需一根传输线即可完成，成本低但传送速度慢。由于串口（COM）不支持热插拔及传输速率较低，目前部分新主板和大部分便携电脑已取消该接口。现在串口多用于工业控制和测量设备以及部分通信设备中。<br>　　根据美国电子工业协会(EIA: Electronic Industry Association）制定的标准，串口可以分为RS-232、RS-422以及RS-485等种类，其中以RS-232类型的接口最为典型和常见，本文所使用的是RS-232类型的9针串口（RS-232类型有25接口，但是现在几乎不再使用）。如图 1所示，是RS-232类型9针串口的实物示意图。RS-232类型9针串口每一个引脚的作用说明如图 2所示。<br>　　　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzE0MjExODU4Mjg2" alt><br>　　　　　　　　图 1 RS232 9针串口实物示意图</p>
+<p>　　　　<img src="https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzE0MjEyMTQzMDc1" alt><br>　　　　　　　　图 2 RS232 9针串口的针脚示意图</p>
+<p>　　想更加深入了解串口知识的读者请参阅以下内容：<a href="http://baike.baidu.com/link?url=JMmSltIsEH4Y5F36l6UPv5GbR_E_eOj2kFQUfxPDc__rSSXRMYrusbuBPvombbWHlxE2AbmRvRS8eFa1l2aQV8qdxyC9YCccnfSb7YbEntrGppG6cH4H3FMkQgGck9faFD1aRONpvmvb64SoYefeCK" target="_blank" rel="noopener">串行接口</a>、<a href="http://baike.baidu.com/link?url=YHh-sC5MTVLxPLxJfj4TPzxRAwlUUxTii7Uqkca5JIOWMaizIvwunGzv2ZCIUlneeByAYPuHlZ0TYHie9Q9Seq" target="_blank" rel="noopener">RS-232</a>、<a href="http://baike.baidu.com/link?url=of--Zy8XRLlnI6ixVlqtMy1AQge5iIJf09ekutAf4Daz6-JT8McRUAkx3snsdNkoPXpJEIAVsTHPpBTrpdk6la" target="_blank" rel="noopener">RS-422</a>、<a href="http://baike.baidu.com/link?url=x6Lt3_NL3VdTGzS_9y-GpldPuIRY1O1MKjOdsKxQvq3rT2RyJ-Oht4qc5A9_584iNTOtvRqaap9cOOMVsyEU9K" target="_blank" rel="noopener">rs485</a></p>
+<h1 id="Java对串口编程的API包"><a href="#Java对串口编程的API包" class="headerlink" title="Java对串口编程的API包"></a>Java对串口编程的API包</h1><p>　　目前比较常见的针对Java的串口包有3个来源：一是1998年SUN发布的串口通信API：comm2.0.jar（Windows环境下）和comm3.0.jar（Linux/Solaris环境下）；二是IBM的串口通信API；三是一些开源的API。本文介绍的是在Windows环境下使用java语言对串口进行编程，所以选取SUN的官方API（comm2.0.jar）。comm2.0.jar和comm3.0.jar的下载地址如下：<br>　　comm2.0.jar：<a href="http://pan.baidu.com/s/1pJKBOcN" target="_blank" rel="noopener">http://pan.baidu.com/s/1pJKBOcN</a><br>　　comm3.0.jar：<a href="http://pan.baidu.com/s/1o6wrpwA" target="_blank" rel="noopener">http://pan.baidu.com/s/1o6wrpwA</a></p>
+<h1 id="对串口编程的环境搭建"><a href="#对串口编程的环境搭建" class="headerlink" title="对串口编程的环境搭建"></a>对串口编程的环境搭建</h1><h2 id="软件环境搭建"><a href="#软件环境搭建" class="headerlink" title="软件环境搭建"></a>软件环境搭建</h2><p>　　在本文写作时，本人所使用的软件开发环境为：Windows7，Jdk1.6.0_10，Eclipse3.4.1。Java对串口编程的环境搭建分为以下步骤：<br>　　1.下载并安装jdk，本人jdk的根目录是“D:\ProgramFiles\Java\jdk1.6.0_10”，在接下来的文章中路径“D:\ProgramFiles\Java\jdk1.6.0_10”将使用“%JAVA_HOME%”来代替；<br>　　2.下载comm2.0.jar（下载链接见上文）并将串口编程必须的3个文件拷贝到jdk对应的文件夹中：<br>　　　　2.1.将win32com.dll文件拷贝到“%JAVA_HOME%\bin”以及“%JAVA_HOME%\jre\bin”目录下<br>　　　　2.2    将comm.jar文件拷贝到“%JAVA_HOME%\lib”以及“%JAVA_HOME%\jre\lib\ext”目录下<br>　　　　2.3    将javax.comm.properties文件拷贝到“%JAVA_HOME%\lib”以及“%JAVA_HOME%\jre\lib”下<br>　　3    新建工程并将comm.jar添加到工程文件中：<br>　　　　3.1    新建java工程serialPortProgramming，并将该工程的运行时环境（JRE）指定为步骤1中新安装的jdk。<br>　　　　3.2    在工程中新建“lib”文件夹，并将comm.jar文件拷贝到该文件夹下，右键点击该文件选择【Build Path】—【Add to Build Path】。</p>
+<h2 id="“硬件”-环境准备"><a href="#“硬件”-环境准备" class="headerlink" title="“硬件” 环境准备"></a>“硬件” 环境准备</h2><p>　　Java对串口编程，首先设备上需要有串口（这不废话吗），但如今的大多数电脑主板上并不带串口，所以本人用Virtual Serial Port Driver软件虚拟出一对串口COM11和COM21，以方便文章的写作和实验的进行。<br>　　下载Virtual Serial Port Driver7.1（<a href="http://pan.baidu.com/s/1qW6wCsW）并安装，使用压缩包中的“vspdctl.dll”文件替换软件安装根目录中的“vspdctl.dll”文件即可完成破解。安装Virtual" target="_blank" rel="noopener">http://pan.baidu.com/s/1qW6wCsW）并安装，使用压缩包中的“vspdctl.dll”文件替换软件安装根目录中的“vspdctl.dll”文件即可完成破解。安装Virtual</a> Serial Port Driver之后用该软件创建一对端口（COM11和COM21），在此创建的一对串口将在之后的实验中再次使用到。因为串口COM11和COM21是通过软件虚拟的、相互连接的一对串口，所以从COM11发送的数据COM21会接收到，反之亦然。<br>　　当然如果自己的设备上有串口的话也可以不用创建虚拟串口，只需要将一个串口的数据发送引脚（引脚3，如图 2所示）和另一个串口的数据接收引脚（引脚2）使用一根铜线链接即可实现数据的收发。如果设备上只有一个串口，要实现串口数据的收发，可以将串口的引脚2和引脚3使用铜线相连接，这样从本串口发送的数据就会通过本串口接收到。</p>
+<h1 id="实例一：获取本地串口并实现打开与关闭"><a href="#实例一：获取本地串口并实现打开与关闭" class="headerlink" title="实例一：获取本地串口并实现打开与关闭"></a>实例一：获取本地串口并实现打开与关闭</h1><p>　　在上文创建好的工程中新建包“com.serialPort.writer”并新建类OpenerAndCloser，该类实现串口的获取、打开与关闭。</p>
+<p>OpenerAndCloser.java</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> com.serialPort.writer;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> java.util.Enumeration;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.CommPortIdentifier;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.NoSuchPortException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.PortInUseException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.SerialPort;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.UnsupportedCommOperationException;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * 该类实现3个功能</span></span><br><span class="line"><span class="hljs-comment"> * 1.列举出本地所有的串口;</span></span><br><span class="line"><span class="hljs-comment"> * 2.打开所有串口(但是未向串口中写数据);</span></span><br><span class="line"><span class="hljs-comment"> * 3.关闭打开的串口。</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OpenerAndCloser</span> </span>&#123;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;</span><br><span class="line">		<span class="hljs-comment">//1.获取本地所有的端口并输出其名称：</span></span><br><span class="line">		<span class="hljs-comment">//1.1.用于标识端口的变量</span></span><br><span class="line">		CommPortIdentifier portIdentifier = <span class="hljs-keyword">null</span>;</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//1.2.记录所有端口的变量</span></span><br><span class="line">		Enumeration&lt;?&gt; allPorts </span><br><span class="line">			= CommPortIdentifier.getPortIdentifiers();</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//1.3.输出每一个端口</span></span><br><span class="line">		<span class="hljs-keyword">while</span>(allPorts.hasMoreElements())&#123;</span><br><span class="line">			portIdentifier </span><br><span class="line">				= (CommPortIdentifier) allPorts.nextElement();</span><br><span class="line">			System.out.println(<span class="hljs-string">"串口："</span> + portIdentifier.getName());</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//2.打开COM11和COM21端口</span></span><br><span class="line">		<span class="hljs-comment">//2.1.获取两个端口</span></span><br><span class="line">		CommPortIdentifier com11 = <span class="hljs-keyword">null</span>;</span><br><span class="line">		CommPortIdentifier com21 = <span class="hljs-keyword">null</span>;</span><br><span class="line">		<span class="hljs-keyword">try</span> &#123;</span><br><span class="line">			com11 = CommPortIdentifier.getPortIdentifier(<span class="hljs-string">"COM11"</span>);</span><br><span class="line">			com21 = CommPortIdentifier.getPortIdentifier(<span class="hljs-string">"COM21"</span>);</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (NoSuchPortException e) &#123;</span><br><span class="line">			<span class="hljs-comment">// TODO Auto-generated catch block</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//2.2.打开两个端口，但是什么都没干</span></span><br><span class="line">		SerialPort serialCom11 = <span class="hljs-keyword">null</span>;</span><br><span class="line">		SerialPort serialCom21 = <span class="hljs-keyword">null</span>;</span><br><span class="line">		<span class="hljs-keyword">try</span> &#123;</span><br><span class="line">			<span class="hljs-comment">//open方法的第1个参数表示串口被打开后的所有者名称，</span></span><br><span class="line">			<span class="hljs-comment">//第2个参数表示如果串口被占用的时候本程序的最长等待时间，以毫秒为单位。</span></span><br><span class="line">			serialCom11 </span><br><span class="line">				= (SerialPort)com11.open(<span class="hljs-string">"OpenerAndCloser"</span>, <span class="hljs-number">1000</span>);</span><br><span class="line">			serialCom21 </span><br><span class="line">				= (SerialPort)com21.open(<span class="hljs-string">"OpenerAndCloser"</span>, <span class="hljs-number">1000</span>);</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (PortInUseException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//要打开的端口被占用时抛出该异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//2.3.设置两个端口的参数</span></span><br><span class="line">		<span class="hljs-keyword">try</span> &#123;</span><br><span class="line">			serialCom11.setSerialPortParams(</span><br><span class="line">					<span class="hljs-number">9600</span>, <span class="hljs-comment">//波特率</span></span><br><span class="line">					SerialPort.DATABITS_8,<span class="hljs-comment">//数据位数</span></span><br><span class="line">					SerialPort.STOPBITS_1,<span class="hljs-comment">//停止位</span></span><br><span class="line">					SerialPort.PARITY_NONE<span class="hljs-comment">//奇偶位</span></span><br><span class="line">			);</span><br><span class="line">			</span><br><span class="line">			serialCom21.setSerialPortParams(</span><br><span class="line">					<span class="hljs-number">9600</span>, <span class="hljs-comment">//波特率</span></span><br><span class="line">					SerialPort.DATABITS_8,<span class="hljs-comment">//数据位数</span></span><br><span class="line">					SerialPort.STOPBITS_1,<span class="hljs-comment">//停止位</span></span><br><span class="line">					SerialPort.PARITY_NONE<span class="hljs-comment">//奇偶位</span></span><br><span class="line">			);</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (UnsupportedCommOperationException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//3.关闭COM11和COM21端口</span></span><br><span class="line">		<span class="hljs-comment">//关闭端口的方法在SerialPort类中</span></span><br><span class="line">		serialCom11.close();</span><br><span class="line">		serialCom21.close();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>　　在以上的代码中，有两个较为重要的类，在此做以说明，它们是类CommPortIdentifier和类SerialPort。这两个类都来自于comm.jar，CommPortIdentifier类代表本地串口，可以通过该类的静态方法getPortIdentifier或getPortIdentifiers获取本地的串口，该类的实例方法open用于打开串口。SerialPort类同样代表本地串口，不过其代表的是打开的串口，可以通过该类的实例方法close关闭已经打开的串口，也可以通过该类的实例方法获取串口的输入输出流，实现往串口数据的读写操作。<br>　　执行Com11Writer类的main方法，就会发现控制台输出了本地机器的所有串口（包括虚拟串口和物理串口）。</p>
+<h1 id="实例二：串口数据的读写"><a href="#实例二：串口数据的读写" class="headerlink" title="实例二：串口数据的读写"></a>实例二：串口数据的读写</h1><h2 id="向串口写数据"><a href="#向串口写数据" class="headerlink" title="向串口写数据"></a>向串口写数据</h2><p>　　在包“com.serialPort.writer”下新建Com11Writer类，该类实现往COM11写入数据“Hello World!”的功能，向串口COM11写入的数据会发送到与其相连的另一个串口COM21，并被COM21所接收，从串口接收数据的方式将在下文讲到，以下是Com11Writer的源代码：</p>
+<p>Com11Writer.java</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> com.serialPort.writer;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="hljs-keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.CommPortIdentifier;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.NoSuchPortException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.PortInUseException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.SerialPort;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Com11Writer类的功能是向COM11串口发送字符串“Hello World!”</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Com11Writer</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;</span><br><span class="line">		<span class="hljs-comment">//1.定义变量</span></span><br><span class="line">		CommPortIdentifier com11 = <span class="hljs-keyword">null</span>;<span class="hljs-comment">//用于记录本地串口</span></span><br><span class="line">		SerialPort serialCom11 = <span class="hljs-keyword">null</span>;<span class="hljs-comment">//用于标识打开的串口</span></span><br><span class="line">		</span><br><span class="line">		<span class="hljs-keyword">try</span> &#123;</span><br><span class="line">			<span class="hljs-comment">//2.获取COM11口</span></span><br><span class="line">			com11 = CommPortIdentifier.getPortIdentifier(<span class="hljs-string">"COM11"</span>);</span><br><span class="line">			</span><br><span class="line">			<span class="hljs-comment">//3.打开COM11</span></span><br><span class="line">			serialCom11 = (SerialPort) com11.open(<span class="hljs-string">"Com11Writer"</span>, <span class="hljs-number">1000</span>);</span><br><span class="line">			</span><br><span class="line">			<span class="hljs-comment">//4.往串口写数据（使用串口对应的输出流对象）</span></span><br><span class="line">			<span class="hljs-comment">//4.1.获取串口的输出流对象</span></span><br><span class="line">			OutputStream outputStream = serialCom11.getOutputStream();</span><br><span class="line">			</span><br><span class="line">			<span class="hljs-comment">//4.2.通过串口的输出流向串口写数据“Hello World!”：</span></span><br><span class="line">			<span class="hljs-comment">//使用输出流往串口写数据的时候必须将数据转换为byte数组格式或int格式，</span></span><br><span class="line">			<span class="hljs-comment">//当另一个串口接收到数据之后再根据双方约定的规则，对数据进行解码。</span></span><br><span class="line">			outputStream.write(<span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[]&#123;<span class="hljs-string">'H'</span>,<span class="hljs-string">'e'</span>,<span class="hljs-string">'l'</span>,<span class="hljs-string">'l'</span>,<span class="hljs-string">'o'</span>,</span><br><span class="line">					<span class="hljs-string">' '</span>,<span class="hljs-string">'W'</span>,<span class="hljs-string">'o'</span>,<span class="hljs-string">'r'</span>,<span class="hljs-string">'l'</span>,<span class="hljs-string">'d'</span>,<span class="hljs-string">'!'</span>&#125;);</span><br><span class="line">			outputStream.flush();</span><br><span class="line">			<span class="hljs-comment">//4.3.关闭输出流</span></span><br><span class="line">			outputStream.close();</span><br><span class="line">			</span><br><span class="line">			<span class="hljs-comment">//5.关闭串口</span></span><br><span class="line">			serialCom11.close();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (NoSuchPortException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//找不到串口的情况下抛出该异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (PortInUseException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//如果因为端口被占用而导致打开失败，则抛出该异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//如果获取输出流失败，则抛出该异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="从串口读数据"><a href="#从串口读数据" class="headerlink" title="从串口读数据"></a>从串口读数据</h2><p>　　从串口COM11发送的数据最终将到达与其连通的串口COM21，如果COM21处于可用状态，则到达的数据将被缓存，等待程序的读取。从串口读入数据有多种模式，本文将介绍“轮询模式”和事件监听模式。<br>　　“轮询模式”是指程序（线程）每隔固定的时间就对串口进行一次扫描，如果扫描发现串口中有可用数据，则进行读取。Com21PollingListener类使用“事件监听模式”读取串口COM21接收到的数据：</p>
+<p>Com21PollingListener.java</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> com.serialPort.listener;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="hljs-keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.CommPortIdentifier;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.NoSuchPortException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.PortInUseException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.SerialPort;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Com21PollingListener类使用“轮训”的方法监听串口COM21，</span></span><br><span class="line"><span class="hljs-comment"> * 并通过COM21的输入流对象来获取该端口接收到的数据（在本文中数据来自串口COM11）。</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Com21PollingListener</span> </span>&#123;</span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;</span><br><span class="line">		<span class="hljs-comment">//1.定义变量</span></span><br><span class="line">		CommPortIdentifier com21 = <span class="hljs-keyword">null</span>;<span class="hljs-comment">//未打卡的端口</span></span><br><span class="line">		SerialPort serialCom21 = <span class="hljs-keyword">null</span>;<span class="hljs-comment">//打开的端口</span></span><br><span class="line">		InputStream inputStream = <span class="hljs-keyword">null</span>;<span class="hljs-comment">//端口输入流</span></span><br><span class="line">		</span><br><span class="line">		<span class="hljs-keyword">try</span>&#123;</span><br><span class="line">			<span class="hljs-comment">//2.获取并打开串口COM21</span></span><br><span class="line">			com21 = CommPortIdentifier.getPortIdentifier(<span class="hljs-string">"COM21"</span>);</span><br><span class="line">			serialCom21 = (SerialPort) com21.open(<span class="hljs-string">"Com21Listener"</span>, <span class="hljs-number">1000</span>);</span><br><span class="line">			</span><br><span class="line">			<span class="hljs-comment">//3.获取串口的输入流对象</span></span><br><span class="line">			inputStream = serialCom21.getInputStream();</span><br><span class="line">			</span><br><span class="line">			<span class="hljs-comment">//4.从串口读入数据</span></span><br><span class="line">			<span class="hljs-comment">//定义用于缓存读入数据的数组</span></span><br><span class="line">			<span class="hljs-keyword">byte</span>[] cache = <span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[<span class="hljs-number">1024</span>];</span><br><span class="line">			<span class="hljs-comment">//记录已经到达串口COM21且未被读取的数据的字节（Byte）数。</span></span><br><span class="line">			<span class="hljs-keyword">int</span> availableBytes = <span class="hljs-number">0</span>;</span><br><span class="line">			</span><br><span class="line">			<span class="hljs-comment">//无限循环，每隔20毫秒对串口COM21进行一次扫描，检查是否有数据到达</span></span><br><span class="line">			<span class="hljs-keyword">while</span>(<span class="hljs-keyword">true</span>)&#123;</span><br><span class="line">				<span class="hljs-comment">//获取串口COM21收到的可用字节数</span></span><br><span class="line">				availableBytes = inputStream.available();</span><br><span class="line">				<span class="hljs-comment">//如果可用字节数大于零则开始循环并获取数据</span></span><br><span class="line">				<span class="hljs-keyword">while</span>(availableBytes &gt; <span class="hljs-number">0</span>)&#123;</span><br><span class="line">					<span class="hljs-comment">//从串口的输入流对象中读入数据并将数据存放到缓存数组中</span></span><br><span class="line">					inputStream.read(cache);</span><br><span class="line">					<span class="hljs-comment">//将获取到的数据进行转码并输出</span></span><br><span class="line">					<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>;j &lt; cache.length &amp;&amp; j &lt; availableBytes; j++)&#123;</span><br><span class="line">						<span class="hljs-comment">//因为COM11口发送的是使用byte数组表示的字符串，</span></span><br><span class="line">						<span class="hljs-comment">//所以在此将接收到的每个字节的数据都强制装换为char对象即可，</span></span><br><span class="line">						<span class="hljs-comment">//这是一个简单的编码转换，读者可以根据需要进行更加复杂的编码转换。</span></span><br><span class="line">						System.out.print((<span class="hljs-keyword">char</span>)cache[j]);</span><br><span class="line">					&#125;</span><br><span class="line">					System.out.println();</span><br><span class="line">					<span class="hljs-comment">//更新循环条件</span></span><br><span class="line">					availableBytes = inputStream.available();</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="hljs-comment">//让线程睡眠20毫秒</span></span><br><span class="line">				Thread.sleep(<span class="hljs-number">20</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="hljs-keyword">catch</span>(InterruptedException e)&#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;<span class="hljs-keyword">catch</span> (NoSuchPortException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//找不到串口的情况下抛出该异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (PortInUseException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//如果因为端口被占用而导致打开失败，则抛出该异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			<span class="hljs-comment">//如果获取输出流失败，则抛出该异常</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>　　“事件监听模式”是为串口注册一个事件监听类，当有数据到达串口的时候就会触发事件，在事件的响应方法中读取串口接收到的数据。Com21EventListener类使用“事件监听模式”读取串口COM21接收到的数据：<br>Com21EventListener.java</p>
+<figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">package</span> com.serialPort.listener;</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="hljs-keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="hljs-keyword">import</span> java.util.TooManyListenersException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.CommPortIdentifier;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.NoSuchPortException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.PortInUseException;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.SerialPort;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.SerialPortEvent;</span><br><span class="line"><span class="hljs-keyword">import</span> javax.comm.SerialPortEventListener;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">/**</span></span><br><span class="line"><span class="hljs-comment"> * Com21EventListener类使用“事件监听模式”监听串口COM21，</span></span><br><span class="line"><span class="hljs-comment"> * 并通过COM21的输入流对象来获取该端口接收到的数据（在本文中数据来自串口COM11）。</span></span><br><span class="line"><span class="hljs-comment"> * 使用“事件监听模式”监听串口，必须字定义一个事件监听类，该类实现SerialPortEventListener</span></span><br><span class="line"><span class="hljs-comment"> * 接口并重写serialEvent方法，在serialEvent方法中编写监听逻辑。</span></span><br><span class="line"><span class="hljs-comment"> */</span></span><br><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Com21EventListener</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">SerialPortEventListener</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">//1.定义变量</span></span><br><span class="line">	CommPortIdentifier com21 = <span class="hljs-keyword">null</span>;<span class="hljs-comment">//未打卡的端口</span></span><br><span class="line">	SerialPort serialCom21 = <span class="hljs-keyword">null</span>;<span class="hljs-comment">//打开的端口</span></span><br><span class="line">	InputStream inputStream = <span class="hljs-keyword">null</span>;<span class="hljs-comment">//输入流</span></span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">//2.构造函数：</span></span><br><span class="line">	<span class="hljs-comment">//实现初始化动作：获取串口COM21、打开串口、获取串口输入流对象、为串口添加事件监听对象</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Com21EventListener</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">		<span class="hljs-keyword">try</span> &#123;</span><br><span class="line">			<span class="hljs-comment">//获取串口、打开窗串口、获取串口的输入流。</span></span><br><span class="line">			com21 = CommPortIdentifier.getPortIdentifier(<span class="hljs-string">"COM21"</span>);</span><br><span class="line">			serialCom21 = (SerialPort) com21.open(<span class="hljs-string">"Com21EventListener"</span>, <span class="hljs-number">1000</span>);</span><br><span class="line">			inputStream = serialCom21.getInputStream();</span><br><span class="line">			</span><br><span class="line">			<span class="hljs-comment">//向串口添加事件监听对象。</span></span><br><span class="line">			serialCom21.addEventListener(<span class="hljs-keyword">this</span>);</span><br><span class="line">			<span class="hljs-comment">//设置当端口有可用数据时触发事件，此设置必不可少。</span></span><br><span class="line">			serialCom21.notifyOnDataAvailable(<span class="hljs-keyword">true</span>);</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (NoSuchPortException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (PortInUseException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="hljs-keyword">catch</span> (TooManyListenersException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">//重写继承的监听器方法</span></span><br><span class="line">	<span class="hljs-meta">@Override</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">serialEvent</span><span class="hljs-params">(SerialPortEvent event)</span> </span>&#123;</span><br><span class="line">		<span class="hljs-comment">//定义用于缓存读入数据的数组</span></span><br><span class="line">		<span class="hljs-keyword">byte</span>[] cache = <span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[<span class="hljs-number">1024</span>];</span><br><span class="line">		<span class="hljs-comment">//记录已经到达串口COM21且未被读取的数据的字节（Byte）数。</span></span><br><span class="line">		<span class="hljs-keyword">int</span> availableBytes = <span class="hljs-number">0</span>;</span><br><span class="line">		</span><br><span class="line">		<span class="hljs-comment">//如果是数据可用的时间发送，则进行数据的读写</span></span><br><span class="line">		<span class="hljs-keyword">if</span>(event.getEventType() == SerialPortEvent.DATA_AVAILABLE)&#123;</span><br><span class="line">			<span class="hljs-keyword">try</span> &#123;</span><br><span class="line">				availableBytes = inputStream.available();</span><br><span class="line">				<span class="hljs-keyword">while</span>(availableBytes &gt; <span class="hljs-number">0</span>)&#123;</span><br><span class="line">					inputStream.read(cache);</span><br><span class="line">					<span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; cache.length &amp;&amp; i &lt; availableBytes; i++)&#123;</span><br><span class="line">						<span class="hljs-comment">//解码并输出数据</span></span><br><span class="line">						System.out.print((<span class="hljs-keyword">char</span>)cache[i]);</span><br><span class="line">					&#125;</span><br><span class="line">					availableBytes = inputStream.available();</span><br><span class="line">				&#125;</span><br><span class="line">				System.out.println();</span><br><span class="line">			&#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-comment">//在main方法中创建类的实例</span></span><br><span class="line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;</span><br><span class="line">		<span class="hljs-keyword">new</span> Com21EventListener();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="读写程序的联合运行"><a href="#读写程序的联合运行" class="headerlink" title="读写程序的联合运行"></a>读写程序的联合运行</h2><p>　　串口能接收到数据的前提是该串口处于打开（可用）状态，如果串口处于关闭状态，那么发送到该串口的数据就会丢失。所以在实验的过程中，如果使用铜线连接同一个串口的引脚2和引脚3，一定要注意的是千万不能在向串口发送完数据之后关闭该串口，然后再次打开串口去读取数据，一定要让串口始终处于打开状态直到程序运行结束。<br>　　基于以上的说明，在本文所涉及到的实例中，首先运行Com21PollingListener类（或Com21EventListener类）中的main方法打开端口监听程序，然后再运行Com11Writer类的main方法通过COM11向COM21发送数据，这样程序就能从COM21读取数据。</p>
+<h1 id="参考与鸣谢"><a href="#参考与鸣谢" class="headerlink" title="参考与鸣谢"></a>参考与鸣谢</h1><p>　　在本文写作的过程中参考了很多网络资源，其中参考了如下几篇文章，在此对所有作者的无私奉献表示衷心的感谢。<br>　　<a href="http://blog.csdn.net/luoduyu/article/details/2182321" target="_blank" rel="noopener">http://blog.csdn.net/luoduyu/article/details/2182321</a><br>　　<a href="http://www.cnblogs.com/dyufei/archive/2010/09/19/2573913.html" target="_blank" rel="noopener">http://www.cnblogs.com/dyufei/archive/2010/09/19/2573913.html</a><br>　　<a href="http://www.cnblogs.com/dyufei/archive/2010/09/19/2573912.html" target="_blank" rel="noopener">http://www.cnblogs.com/dyufei/archive/2010/09/19/2573912.html</a><br>　　<a href="http://www.cnblogs.com/dyufei/archive/2010/09/19/2573911.html" target="_blank" rel="noopener">http://www.cnblogs.com/dyufei/archive/2010/09/19/2573911.html</a></p>
+<p>　　本文实例的源工程文件可以从以下链接获取
+　</p>
+<ul>
+<li>链接: <a href="https://pan.baidu.com/s/1m9qXcYQMcppkEcD8YVxEbQ" target="_blank" rel="noopener">https://pan.baidu.com/s/1m9qXcYQMcppkEcD8YVxEbQ</a> </li>
+<li>密码: <code>x5xw</code></li>
+</ul>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Java/">Java</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信打赏</span>
+    <div class="qrcode"><img src="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/public/wechat_reward.jpeg" alt="微信"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>互加好友</span>
+    <div class="qrcode"><img src="https://yongshengcnd.oss-cn-beijing.aliyuncs.com/public/wechat_friend.jpeg" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2015/03/17/WOL/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">使用Java Socket发送魔术包：实现电脑远程开机(WOL)</span>
+            </a>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+</div>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/logo.svg" alt="Java串口编程：串口数据的发送与监听读取" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2019 Carose&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+</body>
+</html>
