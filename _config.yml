@@ -78,4 +78,7 @@ theme: icarus
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: git
+  repo: git@github.com:CaroseKYS/carosekys.github.io.git
+  branch: master
+  message: deploy
