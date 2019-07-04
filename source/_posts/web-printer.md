@@ -1,4 +1,11 @@
-# WEB 打印
+---
+title: WEB 打印方案探讨
+excerpt: true
+date: 2019-07-03 19:12:06
+menu:
+	Go Home: /index.html
+tags: [Web]
+---
 
 ## 打印方法分类
 
