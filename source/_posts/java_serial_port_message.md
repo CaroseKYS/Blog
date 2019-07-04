@@ -7,16 +7,19 @@ menu:
 	Go Home: /index.html
 tags: [Java]
 ---
+<span style="color: #555;font-size: 1rem;display: inline-block;padding-bottom: 15px;text-indent: 2em;">
+背景图《阿尔卑斯山的雪崩》，是菲利普·卢泰尔堡于1803年创作的一幅布面油画，现藏于菲利普·卢泰尔堡，是一幅以严谨的手法描绘阿尔卑斯山雪崩景象的风景画。
+</span>
 
-　　本人在近期的开发工作中遇到向串口发送设备控制指令的需求，遂对串口编程进行了略微深入的钻研，在此对自己的一些心得和经验进行总结，以供大家参考与交流。
+本人在近期的开发工作中遇到向串口发送设备控制指令的需求，遂对串口编程进行了略微深入的钻研，在此对自己的一些心得和经验进行总结，以供大家参考与交流。
 <!-- more -->
 #串口介绍 #
 　　串口全称为串行接口，一般指COM接口，是采用串行通信方式的扩展接口。其特点是数据位的传送按位顺序进行，最少只需一根传输线即可完成，成本低但传送速度慢。由于串口（COM）不支持热插拔及传输速率较低，目前部分新主板和大部分便携电脑已取消该接口。现在串口多用于工业控制和测量设备以及部分通信设备中。
 　　根据美国电子工业协会(EIA: Electronic Industry Association）制定的标准，串口可以分为RS-232、RS-422以及RS-485等种类，其中以RS-232类型的接口最为典型和常见，本文所使用的是RS-232类型的9针串口（RS-232类型有25接口，但是现在几乎不再使用）。如图 1所示，是RS-232类型9针串口的实物示意图。RS-232类型9针串口每一个引脚的作用说明如图 2所示。
-　　　　![图 1 RS232 9针串口实物示意图](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzE0MjExODU4Mjg2)
+　　　　![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzE0MjExODU4Mjg2)
 　　　　　　　　图 1 RS232 9针串口实物示意图
 
-　　　　![图 2 RS232 9针串口的针脚示意图](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzE0MjEyMTQzMDc1)
+　　　　![](https://imgconvert.csdnimg.cn/aHR0cDovL2ltZy5ibG9nLmNzZG4ubmV0LzIwMTUwMzE0MjEyMTQzMDc1)
 　　　　　　　　图 2 RS232 9针串口的针脚示意图
 
 　　想更加深入了解串口知识的读者请参阅以下内容：[串行接口](http://baike.baidu.com/link?url=JMmSltIsEH4Y5F36l6UPv5GbR_E_eOj2kFQUfxPDc__rSSXRMYrusbuBPvombbWHlxE2AbmRvRS8eFa1l2aQV8qdxyC9YCccnfSb7YbEntrGppG6cH4H3FMkQgGck9faFD1aRONpvmvb64SoYefeCK)、[RS-232](http://baike.baidu.com/link?url=YHh-sC5MTVLxPLxJfj4TPzxRAwlUUxTii7Uqkca5JIOWMaizIvwunGzv2ZCIUlneeByAYPuHlZ0TYHie9Q9Seq)、[RS-422](http://baike.baidu.com/link?url=of--Zy8XRLlnI6ixVlqtMy1AQge5iIJf09ekutAf4Daz6-JT8McRUAkx3snsdNkoPXpJEIAVsTHPpBTrpdk6la)、[rs485](http://baike.baidu.com/link?url=x6Lt3_NL3VdTGzS_9y-GpldPuIRY1O1MKjOdsKxQvq3rT2RyJ-Oht4qc5A9_584iNTOtvRqaap9cOOMVsyEU9K)

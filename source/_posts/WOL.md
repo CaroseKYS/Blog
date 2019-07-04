@@ -2,14 +2,16 @@
 title: 使用Java Socket发送魔术包：实现电脑远程开机(WOL)
 excerpt: true
 date: 2015-03-17 16:12:06
-thumbnail: https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E9%98%BF%E5%B0%94%E5%8D%91%E6%96%AF%E5%B1%B1%E7%9A%84%E9%9B%AA%E5%B4%A9%20.jpeg
+thumbnail: https://yongshengcnd.oss-cn-beijing.aliyuncs.com/paintings/%E8%85%93%E7%89%B9%E7%83%88%E5%90%AC%E6%A1%91%E7%B4%A2%E8%A5%BF%E9%95%BF%E7%AC%9B%E9%9F%B3%E4%B9%90%E4%BC%9A.jpeg
 menu:
 	Go Home: /index.html
 tags: [Java]
 ---
+<span style="color: #555;font-size: 1rem;display: inline-block;padding-bottom: 15px;text-indent: 2em;">
+背景图《腓特烈听桑索西长笛音乐会》，由阿尔道夫·门采尔（德国）于1852年创作，该画的写实手法体现于画面每一处细节。幻妙的音乐，精致的灯盏，婉转的长笛，闪烁的烛光，每一种物象的和谐构置复原了一幅展现上层社会风貌的画面。
+</span>
 
-# 概述
-　　远程开机也被称为远程唤醒技术（Wake on Lan: WOL），是指可以通过局域网、互联网或者通讯网实现远程开机，无论目标主机离用户有多远、处于什么位置，只要其与发送命令主机可以通信，就能够被随时启动，该技术被现在的大多数主板与网卡所支持。
+远程开机也被称为远程唤醒技术（Wake on Lan: WOL），是指可以通过局域网、互联网或者通讯网实现远程开机，无论目标主机离用户有多远、处于什么位置，只要其与发送命令主机可以通信，就能够被随时启动，该技术被现在的大多数主板与网卡所支持。
 <!-- more -->
 
 　　远程开机的实现主要依靠向目标主机发送特定格式的数据包，最初AMD公司推出的MagicPackage用于生成远程唤醒所需的特殊数据包，俗称魔术包（Magic Package）。MagicPackage技术只是AMD公司开发并推广的技术，尚未成为一项国际标准，但是该技术受到大多数网卡制造商的支持，因此具有远程唤醒功能的网卡都兼容这项技术。
