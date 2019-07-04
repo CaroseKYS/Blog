@@ -49,7 +49,7 @@ tags: [Java]
 　　在上文创建好的工程中新建包“com.serialPort.writer”并新建类OpenerAndCloser，该类实现串口的获取、打开与关闭。
 
 OpenerAndCloser.java
-```
+```java
 package com.serialPort.writer;
 
 import java.util.Enumeration;
@@ -144,7 +144,7 @@ public class OpenerAndCloser {
 　　在包“com.serialPort.writer”下新建Com11Writer类，该类实现往COM11写入数据“Hello World!”的功能，向串口COM11写入的数据会发送到与其相连的另一个串口COM21，并被COM21所接收，从串口接收数据的方式将在下文讲到，以下是Com11Writer的源代码：
 
 Com11Writer.java
-```
+```java
 package com.serialPort.writer;
 
 import java.io.IOException;
@@ -206,7 +206,7 @@ public class Com11Writer {
 　　“轮询模式”是指程序（线程）每隔固定的时间就对串口进行一次扫描，如果扫描发现串口中有可用数据，则进行读取。Com21PollingListener类使用“事件监听模式”读取串口COM21接收到的数据：
 
 Com21PollingListener.java
-```
+``` java
 package com.serialPort.listener;
 
 import java.io.IOException;
@@ -281,7 +281,7 @@ public class Com21PollingListener {
 
 　　“事件监听模式”是为串口注册一个事件监听类，当有数据到达串口的时候就会触发事件，在事件的响应方法中读取串口接收到的数据。Com21EventListener类使用“事件监听模式”读取串口COM21接收到的数据：
 Com21EventListener.java
-```
+```java
 package com.serialPort.listener;
 
 import java.io.IOException;
